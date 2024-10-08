@@ -29,8 +29,8 @@ export default {
 		const token = url.searchParams.get('token');
 		mytoken = env.TOKEN || mytoken;
 		BotToken = env.TGTOKEN || BotToken;
-		ChatID = env.TGID || ChatID; 
-		TG =  env.TG || TG; 
+		ChatID = env.TGID || ChatID;
+		TG =  env.TG || TG;
 		subconverter = env.SUBAPI || subconverter;
 		if( subconverter.includes("http://") ){
 			subconverter = subconverter.split("//")[1];
@@ -44,7 +44,7 @@ export default {
 		if(env.LINKSUB) urls = await ADD(env.LINKSUB);
 
 		const currentDate = new Date();
-		currentDate.setHours(0, 0, 0, 0); 
+		currentDate.setHours(0, 0, 0, 0);
 		const timeTemp = Math.ceil(currentDate.getTime() / 1000);
 		const fakeToken = await MD5MD5(`${mytoken}${timeTemp}`);
 		//console.log(`${fakeUserID}\n${fakeHostName}`); // 打印fakeID
@@ -71,7 +71,7 @@ export default {
 			if ( TG == 1 && url.pathname !== "/" && url.pathname !== "/favicon.ico" ) await sendMessage(`#异常访问 ${FileName}`, request.headers.get('CF-Connecting-IP'), `UA: ${userAgent}</tg-spoiler>\n域名: ${url.hostname}\n<tg-spoiler>入口: ${url.pathname + url.search}</tg-spoiler>`);
 			if (env.URL302) return Response.redirect(env.URL302, 302);
 			else if (env.URL) return await proxyURL(env.URL, url);
-			else return new Response(await nginx(), { 
+			else return new Response(await nginx(), {
 				status: 200 ,
 				headers: {
 					'Content-Type': 'text/html; charset=UTF-8',
@@ -99,7 +99,7 @@ export default {
 			if (url.searchParams.has('clash')) 追加UA = 'clash';
 			else if(url.searchParams.has('singbox')) 追加UA = 'singbox';
 			else if(url.searchParams.has('surge')) 追加UA = 'surge';
-			
+
 			const 请求订阅响应内容 = await getSUB(urls, 追加UA, userAgentHeader);
 			console.log(请求订阅响应内容);
 			req_data += 请求订阅响应内容[0].join('\n');
@@ -110,17 +110,17 @@ export default {
 			const utf8Encoder = new TextEncoder();
 			const encodedData = utf8Encoder.encode(req_data);
 			const text = String.fromCharCode.apply(null, encodedData);
-			
+
 			//去重
 			const uniqueLines = new Set(text.split('\n'));
 			const result = [...uniqueLines].join('\n');
 			//console.log(result);
-			
+
 			const base64Data = btoa(result);
 
 			if (订阅格式 == 'base64' || token == fakeToken){
 				return new Response(base64Data ,{
-					headers: { 
+					headers: {
 						"content-type": "text/plain; charset=utf-8",
 						"Profile-Update-Interval": `${SUBUpdateTime}`,
 						"Subscription-Userinfo": `upload=${UD}; download=${UD}; total=${total}; expire=${expire}`,
@@ -136,10 +136,10 @@ export default {
 			//console.log(订阅转换URL);
 			try {
 				const subconverterResponse = await fetch(subconverterUrl);
-				
+
 				if (!subconverterResponse.ok) {
 					return new Response(base64Data ,{
-						headers: { 
+						headers: {
 							"content-type": "text/plain; charset=utf-8",
 							"Profile-Update-Interval": `${SUBUpdateTime}`,
 							"Subscription-Userinfo": `upload=${UD}; download=${UD}; total=${total}; expire=${expire}`,
@@ -150,7 +150,7 @@ export default {
 				let subconverterContent = await subconverterResponse.text();
 				if (订阅格式 == 'clash') subconverterContent =await clashFix(subconverterContent);
 				return new Response(subconverterContent, {
-					headers: { 
+					headers: {
 						"Content-Disposition": `attachment; filename*=utf-8''${encodeURIComponent(FileName)}; filename=${FileName}`,
 						"content-type": "text/plain; charset=utf-8",
 						"Profile-Update-Interval": `${SUBUpdateTime}`,
@@ -160,7 +160,7 @@ export default {
 				});
 			} catch (error) {
 				return new Response(base64Data ,{
-					headers: { 
+					headers: {
 						"content-type": "text/plain; charset=utf-8",
 						"Profile-Update-Interval": `${SUBUpdateTime}`,
 						"Subscription-Userinfo": `upload=${UD}; download=${UD}; total=${total}; expire=${expire}`,
@@ -199,12 +199,12 @@ async function nginx() {
 	<h1>Welcome to nginx!</h1>
 	<p>If you see this page, the nginx web server is successfully installed and
 	working. Further configuration is required.</p>
-	
+
 	<p>For online documentation and support please refer to
 	<a href="http://nginx.org/">nginx.org</a>.<br/>
 	Commercial support is available at
 	<a href="http://nginx.com/">nginx.com</a>.</p>
-	
+
 	<p><em>Thank you for using nginx.</em></p>
 	</body>
 	</html>
@@ -222,7 +222,7 @@ async function sendMessage(type, ip, add_data = "") {
 		} else {
 			msg = `${type}\nIP: ${ip}\n<tg-spoiler>${add_data}`;
 		}
-	
+
 		let url = "https://api.telegram.org/bot"+ BotToken +"/sendMessage?chat_id=" + ChatID + "&parse_mode=HTML&text=" + encodeURIComponent(msg);
 		return fetch(url, {
 			method: 'get',
@@ -243,7 +243,7 @@ function base64Decode(str) {
 
 async function MD5MD5(text) {
 	const encoder = new TextEncoder();
-  
+
 	const firstPass = await crypto.subtle.digest('MD5', encoder.encode(text));
 	const firstPassArray = Array.from(new Uint8Array(firstPass));
 	const firstHex = firstPassArray.map(b => b.toString(16).padStart(2, '0')).join('');
@@ -251,7 +251,7 @@ async function MD5MD5(text) {
 	const secondPass = await crypto.subtle.digest('MD5', encoder.encode(firstHex.slice(7, 27)));
 	const secondPassArray = Array.from(new Uint8Array(secondPass));
 	const secondHex = secondPassArray.map(b => b.toString(16).padStart(2, '0')).join('');
-  
+
 	return secondHex.toLowerCase();
 }
 
@@ -263,7 +263,7 @@ function clashFix(content) {
 		} else {
 			lines = content.split('\n');
 		}
-	
+
 		let result = "";
 		for (let line of lines) {
 			if (line.includes('type: wireguard')) {
@@ -329,21 +329,17 @@ async function getSUB(api, 追加UA, userAgentHeader) {
 	let 订阅转换URLs = "";
 	const controller = new AbortController(); // 创建一个AbortController实例，用于取消请求
 
-	const timeout = setTimeout(() => {
-		controller.abort(); // 2秒后取消所有请求
-	}, 2000);
-	
 	try {
 		// 使用Promise.allSettled等待所有API请求完成，无论成功或失败
 		const responses = await Promise.allSettled(api.map(apiUrl => fetch(apiUrl, {
-			method: 'get', 
+			method: 'get',
 			headers: {
 				'Accept': 'text/html,application/xhtml+xml,application/xml;',
 				'User-Agent': `${追加UA} cmliu/CF-Workers-SUB ${userAgentHeader}`
 			},
 			signal: controller.signal // 将AbortController的信号量添加到fetch请求中
 		}).then(response => response.ok ? response.text() : Promise.reject())));
-	
+
 		// 遍历所有响应
 		const modifiedResponses = responses.map((response, index) => {
 			// 检查是否请求成功
@@ -353,9 +349,9 @@ async function getSUB(api, 追加UA, userAgentHeader) {
 				apiUrl: api[index] // 将原始的apiUrl添加到返回对象中
 			};
 		});
-	
+
 		console.log(modifiedResponses); // 输出修改后的响应数组
-	
+
 		for (const response of modifiedResponses) {
 			// 检查响应状态是否为'fulfilled'
 			if (response.status === 'fulfilled') {
@@ -373,10 +369,8 @@ async function getSUB(api, 追加UA, userAgentHeader) {
 		}
 	} catch (error) {
 		console.error(error); // 捕获并输出错误信息
-	} finally {
-		clearTimeout(timeout); // 清除定时器
 	}
-	
+
 	const 订阅内容 = await ADD(newapi);
 
 	// 返回处理后的结果
